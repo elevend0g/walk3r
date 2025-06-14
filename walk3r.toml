@@ -1,0 +1,4 @@
+[walk3r]
+root_path = "../padma/app"
+output_dir = "../padma/walk3r"
+formats = ["json", "csv", "dot"]

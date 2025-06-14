@@ -1,0 +1,15 @@
+[project]
+name = "walk3r"
+version = "0.1.0"
+description = "Modular Python dependency mapping tool"
+authors = [{ name="Jay", email="none@example.com" }]
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = []
+
+[tool.setuptools]
+packages = ["app"]
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"

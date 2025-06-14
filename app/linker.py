@@ -6,6 +6,7 @@ class DependencyLinker:
     def __init__(self, module_data: Dict[str, Dict]):
         self.module_data = module_data
         self.linked_map: Dict[str, Dict[str, Set[str]]] = {}
+        self.function_map: Dict[str, Dict[str, Set[str]]] = {}
 
     def resolve_links(self) -> Dict[str, Dict[str, Set[str]]]:
         for module, data in self.module_data.items():
@@ -20,6 +21,10 @@ class DependencyLinker:
                 mod_guess = self._guess_module(called)
                 if mod_guess and mod_guess != module:
                     self.linked_map[module]["calls"].add(mod_guess)
+
+            if "functions" in data:
+                self.function_map[module] = data["functions"]
+
         return self.linked_map
 
     def _is_local_module(self, module_name: str) -> bool:
@@ -31,3 +36,6 @@ class DependencyLinker:
             if symbol.startswith(mod.split(".")[-1]):
                 return mod
         return ""
+
+    def get_function_map(self) -> Dict[str, Dict[str, Set[str]]]:
+        return self.function_map

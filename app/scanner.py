@@ -2,8 +2,44 @@
 
 import ast
 import os
-from typing import List, Dict, Set
+from typing import Dict, Set, List, Tuple
 from .config import should_ignore
+
+class FunctionVisitor(ast.NodeVisitor):
+    def __init__(self):
+        self.imports: Set[str] = set()
+        self.calls: Set[str] = set()
+        self.functions: Dict[str, Set[str]] = {}
+        self.current_function: str = ""
+
+    def visit_Import(self, node):
+        for alias in node.names:
+            self.imports.add(alias.name)
+        self.generic_visit(node)
+
+    def visit_ImportFrom(self, node):
+        if node.module:
+            self.imports.add(node.module)
+        self.generic_visit(node)
+
+    def visit_FunctionDef(self, node):
+        self.current_function = node.name
+        self.functions[self.current_function] = set()
+        self.generic_visit(node)
+        self.current_function = ""
+
+    def visit_Call(self, node):
+        if isinstance(node.func, ast.Attribute):
+            call_str = f"{ast.unparse(node.func.value)}.{node.func.attr}"
+        elif isinstance(node.func, ast.Name):
+            call_str = node.func.id
+        else:
+            call_str = ast.unparse(node.func)
+
+        self.calls.add(call_str)
+        if self.current_function:
+            self.functions[self.current_function].add(call_str)
+        self.generic_visit(node)
 
 class ModuleScanner:
     def __init__(self, root_path: str):
@@ -32,24 +68,11 @@ class ModuleScanner:
         with open(filepath, "r", encoding="utf-8") as f:
             source = f.read()
         tree = ast.parse(source, filename=filepath)
-
-        imports: Set[str] = set()
-        calls: Set[str] = set()
-
-        for node in ast.walk(tree):
-            if isinstance(node, ast.Import):
-                for alias in node.names:
-                    imports.add(alias.name)
-            elif isinstance(node, ast.ImportFrom):
-                if node.module:
-                    imports.add(node.module)
-            elif isinstance(node, ast.Call):
-                if isinstance(node.func, ast.Attribute):
-                    calls.add(f"{ast.unparse(node.func.value)}.{node.func.attr}")
-                elif isinstance(node.func, ast.Name):
-                    calls.add(node.func.id)
+        visitor = FunctionVisitor()
+        visitor.visit(tree)
 
         return {
-            "imports": sorted(imports),
-            "calls": sorted(calls),
+            "imports": sorted(visitor.imports),
+            "calls": sorted(visitor.calls),
+            "functions": {fn: sorted(calls) for fn, calls in visitor.functions.items()}
         }

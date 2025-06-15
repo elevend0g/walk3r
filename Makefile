@@ -1,4 +1,4 @@
-.PHONY: all build run docker clean
+.PHONY: all build run walk docker clean
 
 all: run
 
@@ -6,6 +6,9 @@ build:
 	docker build -t walk3r .
 
 run:
+	python3 app/go_walk3r.py
+
+walk:
 	python3 app/go_walk3r.py
 
 docker:

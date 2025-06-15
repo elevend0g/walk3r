@@ -1,4 +1,4 @@
 [walk3r]
-root_path = "../padma/app"
-output_dir = "../padma/walk3r"
+root_path = "../padma/"
+output_dir = "./reports/"
 formats = ["json", "csv", "dot"]

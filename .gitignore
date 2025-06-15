@@ -1,0 +1,46 @@
+# === Python bytecode and metadata ===
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# === Output and report files ===
+reports/
+walk3r_out/
+*.log
+*.tmp
+*.bak
+
+# === Build and distribution artifacts ===
+build/
+dist/
+*.egg-info/
+
+# === Virtual environments ===
+.venv/
+venv/
+env/
+
+# === IDE and editor junk ===
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# === OS / system noise ===
+.DS_Store
+Thumbs.db
+
+# === Testing and profiling ===
+.coverage
+.cache/
+.pytest_cache/
+htmlcov/
+*.prof
+
+# === Jupyter (just in case) ===
+.ipynb_checkpoints/
+
+# === Git garbage ===
+*.orig
+*.rej

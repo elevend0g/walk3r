@@ -34,8 +34,9 @@ def update_symlink(target: Path, link_name: Path):
 
 def main():
     cfg = toml.load("walk3r.toml")["walk3r"]
-    root = cfg["root_path"]
-    out_dir = Path(cfg["output_dir"])
+    # Convert relative paths to absolute before directory change
+    root = os.path.abspath(os.path.join(os.getcwd(), cfg["root_path"]))
+    out_dir = Path(os.path.abspath(os.path.join(os.getcwd(), cfg["output_dir"])))
     formats = cfg.get("formats", ["json"])
 
     out_dir.mkdir(parents=True, exist_ok=True)

@@ -107,8 +107,8 @@ class ProjectSummarizer:
             utility_modules = {}
             
             for module, links in deps.items():
-                imports = links.get('imports', [])
-                calls = links.get('calls', [])
+                imports = list(links.get('imports', []))  # Convert set to list
+                calls = list(links.get('calls', []))      # Convert set to list
                 total_deps = len(imports) + len(calls)
                 
                 # Guess module role based on dependencies and name
@@ -182,11 +182,11 @@ class ProjectSummarizer:
             
             # Look for chains of dependencies
             for module, links in deps.items():
-                calls = links.get('calls', [])
+                calls = list(links.get('calls', []))  # Convert set to list
                 if calls:
                     for target in calls:
                         if target in deps:
-                            target_calls = deps[target].get('calls', [])
+                            target_calls = list(deps[target].get('calls', []))  # Convert set to list
                             if target_calls:
                                 flow = f"{module} → {target} → {target_calls[0]}"
                                 flows.append(flow)
@@ -208,7 +208,9 @@ class ProjectSummarizer:
         low_dep_modules = 0
         
         for module, links in deps.items():
-            total_deps = len(links.get('imports', [])) + len(links.get('calls', []))
+            imports = list(links.get('imports', []))  # Convert set to list
+            calls = list(links.get('calls', []))      # Convert set to list
+            total_deps = len(imports) + len(calls)
             if total_deps > 3:
                 high_dep_modules += 1
             elif total_deps <= 1:
@@ -311,7 +313,9 @@ class ProjectSummarizer:
         # Find most connected modules
         connection_counts = {}
         for module, links in deps.items():
-            total_connections = len(links.get('imports', [])) + len(links.get('calls', []))
+            imports = list(links.get('imports', []))  # Convert set to list
+            calls = list(links.get('calls', []))      # Convert set to list
+            total_connections = len(imports) + len(calls)
             connection_counts[module] = total_connections
         
         most_connected = sorted(connection_counts.items(), key=lambda x: x[1], reverse=True)[:3]
@@ -463,12 +467,12 @@ class ProjectSummarizer:
                 explanations[module] = {
                     "purpose": self._describe_module_purpose(module, module_functions),
                     "key_functions": list(module_functions.keys())[:5],
-                    "dependencies": links.get('calls', []),
-                    "used_by": [m for m, l in deps.items() if module in l.get('calls', [])],
+                    "dependencies": list(links.get('calls', [])),  # Convert set to list
+                    "used_by": [m for m, l in deps.items() if module in list(l.get('calls', []))],  # Convert set to list
                     "complexity_notes": self._get_module_complexity_notes(module, complexity)
                 }
-            except:
-                explanations[module] = {"purpose": "Analysis incomplete"}
+            except Exception as e:
+                explanations[module] = {"purpose": f"Analysis incomplete: {str(e)}"}
         
         return explanations
     
@@ -530,7 +534,13 @@ class ProjectSummarizer:
         patterns = []
         
         # Look for layered patterns
-        entry_modules = [m for m, l in deps.items() if len(l.get('imports', [])) + len(l.get('calls', [])) <= 1]
+        entry_modules = []
+        for module, links in deps.items():
+            imports = list(links.get('imports', []))  # Convert set to list
+            calls = list(links.get('calls', []))      # Convert set to list
+            if len(imports) + len(calls) <= 1:
+                entry_modules.append(module)
+        
         if entry_modules:
             patterns.append("Entry point pattern - clear application entry points")
         
@@ -544,7 +554,8 @@ class ProjectSummarizer:
         # Calculate how many modules depend on each module
         dependency_counts = {}
         for module, links in deps.items():
-            for target in links.get('calls', []):
+            calls = list(links.get('calls', []))  # Convert set to list
+            for target in calls:
                 dependency_counts[target] = dependency_counts.get(target, 0) + 1
         
         for module in deps.keys():

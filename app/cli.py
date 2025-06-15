@@ -3,6 +3,7 @@
 import argparse
 import sys
 import toml
+import json
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, Any
@@ -12,12 +13,18 @@ from .linker import DependencyLinker
 from .exporter import export_json, export_csv, export_dot, export_function_map_json, export_function_dot
 from .config import Walk3rConfig
 
-# Import new analysis modules
-from .metrics import MetricsAnalyzer
-from .complexity import ComplexityAnalyzer
-from .db_detector import DatabaseCallDetector
-from .doc_coverage import DocCoverageAnalyzer
-from .summary import ProjectSummarizer
+# Import new analysis modules (with graceful fallback)
+try:
+    from .metrics import MetricsAnalyzer
+    from .complexity import ComplexityAnalyzer
+    from .db_detector import DatabaseCallDetector
+    from .doc_coverage import DocCoverageAnalyzer
+    from .summary import ProjectSummarizer
+    LONG_WALK_AVAILABLE = True
+except ImportError as e:
+    print(f"⚠️  Warning: Long walk modules not available: {e}")
+    print("   Only basic analysis mode will work.")
+    LONG_WALK_AVAILABLE = False
 
 def main():
     parser = argparse.ArgumentParser(description="Walk3r - Python Dependency Mapper")
@@ -32,6 +39,10 @@ def main():
         if args.mode == "basic":
             return run_basic_analysis(args)
         elif args.mode == "long":
+            if not LONG_WALK_AVAILABLE:
+                print("❌ Long walk mode requires additional analysis modules that are not available.")
+                print("   Please ensure all analysis modules are properly installed.")
+                return 1
             return run_long_walk_analysis(args)
     except Exception as e:
         print(f"❌ Analysis failed: {e}")
@@ -144,7 +155,8 @@ def run_long_walk_analysis(args):
             all_analysis_data['metrics'] = metrics_data
             
             metrics_path = output_dir / f"metrics-{date_tag}.json"
-            export_json({"metrics": metrics_data}, metrics_path)
+            with open(metrics_path, 'w', encoding='utf-8') as f:
+                json.dump({"metrics": metrics_data}, f, indent=2)
             print(f"   ✅ Metrics analysis exported: {metrics_path.name}")
             
             # Print brief summary
@@ -162,7 +174,8 @@ def run_long_walk_analysis(args):
             all_analysis_data['complexity'] = complexity_data
             
             complexity_path = output_dir / f"complexity-{date_tag}.json"
-            export_json({"complexity": complexity_data}, complexity_path)
+            with open(complexity_path, 'w', encoding='utf-8') as f:
+                json.dump({"complexity": complexity_data}, f, indent=2)
             print(f"   ✅ Complexity analysis exported: {complexity_path.name}")
             
             # Print brief summary
@@ -183,7 +196,8 @@ def run_long_walk_analysis(args):
             all_analysis_data['db_calls'] = db_data
             
             db_path = output_dir / f"db-calls-{date_tag}.json"
-            export_json({"database_analysis": db_data}, db_path)
+            with open(db_path, 'w', encoding='utf-8') as f:
+                json.dump({"database_analysis": db_data}, f, indent=2)
             print(f"   ✅ Database analysis exported: {db_path.name}")
             
             # Print brief summary
@@ -206,7 +220,8 @@ def run_long_walk_analysis(args):
             all_analysis_data['documentation'] = doc_data
             
             doc_path = output_dir / f"doc-coverage-{date_tag}.json"
-            export_json({"documentation": doc_data}, doc_path)
+            with open(doc_path, 'w', encoding='utf-8') as f:
+                json.dump({"documentation": doc_data}, f, indent=2)
             print(f"   ✅ Documentation analysis exported: {doc_path.name}")
             
             # Print brief summary
@@ -226,13 +241,15 @@ def run_long_walk_analysis(args):
             # Generate main summary
             summary_data = summarizer.generate_summary()
             summary_path = output_dir / f"summary-{date_tag}.json"
-            export_json({"project_summary": summary_data}, summary_path)
+            with open(summary_path, 'w', encoding='utf-8') as f:
+                json.dump({"project_summary": summary_data}, f, indent=2)
             print(f"   ✅ Project summary exported: {summary_path.name}")
             
             # Generate LLM context
             llm_context = summarizer.create_llm_context()
             llm_path = output_dir / f"llm-context-{date_tag}.json"
-            export_json({"llm_context": llm_context}, llm_path)
+            with open(llm_path, 'w', encoding='utf-8') as f:
+                json.dump({"llm_context": llm_context}, f, indent=2)
             print(f"   ✅ LLM context exported: {llm_path.name}")
             
         except Exception as e:

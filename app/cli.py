@@ -2,6 +2,7 @@
 
 import argparse
 import sys
+from datetime import datetime
 from .scanner import ModuleScanner
 from .linker import DependencyLinker
 from .exporter import export_json, export_csv, export_dot
@@ -10,7 +11,7 @@ def main():
     parser = argparse.ArgumentParser(description="Walk3r - Python Dependency Mapper")
     parser.add_argument("--path", required=True, help="Path to source directory")
     parser.add_argument("--format", choices=["json", "csv", "dot"], default="json", help="Export format")
-    parser.add_argument("--output", default="dependency_graph", help="Output file name without extension")
+    parser.add_argument("--output", default=f"dependency_graph-{datetime.now().strftime('%Y%m%d')}", help="Output file name without extension")
     args = parser.parse_args()
 
     scanner = ModuleScanner(args.path)

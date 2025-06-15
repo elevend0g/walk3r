@@ -19,23 +19,7 @@ def render_dot_to_images(dot_path: Path):
 
     print(f"🖼️  Rendered SVG: {svg_path}")
     print(f"🖼️  Rendered PNG: {png_path}")
-    
-    # Create appropriate latest symlinks based on file prefix
-    if svg_path.stem.startswith("deps-"):
-        update_symlink(svg_path, Path("deps-latest.svg"))
-        update_symlink(png_path, Path("deps-latest.png"))
-    elif svg_path.stem.startswith("functions-"):
-        update_symlink(svg_path, Path("functions-latest.svg"))
-        update_symlink(png_path, Path("functions-latest.png"))
 
-def update_symlink(target: Path, link_name: Path):
-    try:
-        if link_name.exists() or link_name.is_symlink():
-            link_name.unlink()
-        link_name.symlink_to(target)
-        print(f"🔗 Updated symlink: {link_name} -> {target}")
-    except Exception as e:
-        print(f"⚠️  Failed to create symlink for {target}: {e}")
 
 def main():
     cfg = toml.load("walk3r.toml")["walk3r"]
@@ -67,19 +51,16 @@ def main():
             render_dot_to_images(out_path)
 
         print(f"✅ Wrote {fmt.upper()} to {out_path}")
-        update_symlink(out_path, Path(f"deps-latest.{fmt}"))
 
     # Export function-level JSON
     fn_json_path = Path(f"functions-{date_tag}.json")
     export_function_map_json(function_map, fn_json_path)
-    update_symlink(fn_json_path, Path("functions-latest.json"))
     print(f"📎 Wrote function-level map to {fn_json_path}")
 
     # Export function-level DOT
     fn_dot_path = Path(f"functions-{date_tag}.dot")
     export_function_dot(function_map, fn_dot_path)
     render_dot_to_images(fn_dot_path)
-    update_symlink(fn_dot_path, Path("functions-latest.dot"))
     print(f"🧠 Wrote function-level graph to {fn_dot_path}")
 
 if __name__ == "__main__":

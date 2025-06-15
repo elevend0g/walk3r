@@ -1,4 +1,0 @@
-[walk3r]
-root_path = "../walk3r/"
-output_dir = "./reports/"
-formats = ["json", "csv", "dot"]

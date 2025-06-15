@@ -1,5 +1,5 @@
 [walk3r]
-root_path = "../walk3r/"
+root_path = "/home/jay/ag1/padma"
 output_dir = "./reports/"
 formats = ["json", "csv", "dot"]
 

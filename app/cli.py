@@ -87,7 +87,7 @@ def run_long_walk_analysis(args):
         )
     
     # Use config values, with command line overrides
-    root_path = args.path
+    root_path = getattr(config, 'root_path', args.path)
     output_dir = Path(config.output_dir)
     
     # Create output directory

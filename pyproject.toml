@@ -1,11 +1,17 @@
 [project]
 name = "walk3r"
-version = "0.1.0"
+version = "0.1.1"
 description = "Modular Python dependency mapping tool"
-authors = [{ name="Jay", email="none@example.com" }]
+authors = [{ name = "Jay", email = "none@example.com" }]
 readme = "README.md"
 requires-python = ">=3.8"
-dependencies = []
+dependencies = [
+    "toml",
+    "graphviz",        # if you're generating .dot/.svg
+    "networkx",        # if you're doing graph work
+    "rich",            # if you pretty-print to terminal
+    "pathlib; python_version<'3.4'",  # pathlib is built-in from 3.4+
+]
 
 [tool.setuptools]
 packages = ["app"]

@@ -2,3 +2,19 @@
 root_path = "../walk3r/"
 output_dir = "./reports/"
 formats = ["json", "csv", "dot"]
+
+# Long walk mode configuration
+enable_complexity = true
+enable_db_detection = true
+enable_doc_coverage = true
+enable_metrics = true
+enable_summary = true
+
+# Database detection customization
+db_methods = ["execute", "query", "find", "insert", "update", "delete", "save", "create"]
+db_modules = ["sqlite3", "sqlalchemy", "pymongo", "psycopg2", "mysql", "redis", "django.db"]
+
+# Complexity analysis thresholds  
+max_function_length = 30
+max_complexity_score = 10
+max_parameter_count = 6

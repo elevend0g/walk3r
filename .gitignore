@@ -5,7 +5,8 @@ __pycache__/
 *.pyd
 
 # === Output and report files ===
-reports/
+reports/*
+!reports/.keep
 walk3r_out/
 *.log
 *.tmp

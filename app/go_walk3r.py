@@ -20,17 +20,22 @@ def render_dot_to_images(dot_path: Path):
     print(f"🖼️  Rendered SVG: {svg_path}")
     print(f"🖼️  Rendered PNG: {png_path}")
     
-    update_symlink(svg_path, svg_path.with_name(svg_path.stem.replace("deps", "deps-latest") + ".svg"))
-    update_symlink(png_path, png_path.with_name(png_path.stem.replace("deps", "deps-latest") + ".png"))
+    # Create appropriate latest symlinks based on file prefix
+    if svg_path.stem.startswith("deps-"):
+        update_symlink(svg_path, Path("deps-latest.svg"))
+        update_symlink(png_path, Path("deps-latest.png"))
+    elif svg_path.stem.startswith("functions-"):
+        update_symlink(svg_path, Path("functions-latest.svg"))
+        update_symlink(png_path, Path("functions-latest.png"))
 
 def update_symlink(target: Path, link_name: Path):
     try:
         if link_name.exists() or link_name.is_symlink():
             link_name.unlink()
-        link_name.symlink_to(target.name)
-        print(f"🔗 Updated symlink: {link_name} -> {target.name}")
+        link_name.symlink_to(target)
+        print(f"🔗 Updated symlink: {link_name} -> {target}")
     except Exception as e:
-        print(f"⚠️  Failed to create symlink for {target.name}: {e}")
+        print(f"⚠️  Failed to create symlink for {target}: {e}")
 
 def main():
     cfg = toml.load("walk3r.toml")["walk3r"]

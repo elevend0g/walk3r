@@ -9,7 +9,6 @@
 - 🧠 **Function-to-function call mapping** per module
 - 📎 `functions-*.json` for structured analysis or AI ingestion
 - 🗺️ Graph output: `functions-*.dot`, `.svg`, `.png`
-- 🔗 Symlinks like `deps-latest.json`, `functions-latest.svg` for easy integration
 - 🧾 Timestamped output like `deps-YYYYMMDD.json` to preserve history
 
 ---

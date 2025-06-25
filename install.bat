@@ -16,6 +16,14 @@ REM Get Python version
 for /f "tokens=2" %%i in ('python --version 2^>^&1') do set PYTHON_VERSION=%%i
 echo 🐍 Found Python %PYTHON_VERSION%
 
+REM Check Python version compatibility
+python -c "import sys; exit(0 if (sys.version_info.major == 3 and sys.version_info.minor >= 8) or sys.version_info.major > 3 else 1)" >nul 2>&1
+if %errorlevel% neq 0 (
+    echo ❌ Python 3.8+ required. Found Python %PYTHON_VERSION%
+    pause
+    exit /b 1
+)
+
 REM Check if pip is available
 python -m pip --version >nul 2>&1
 if %errorlevel% neq 0 (

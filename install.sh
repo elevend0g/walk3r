@@ -21,8 +21,9 @@ check_python() {
     PYTHON_VERSION=$($PYTHON_CMD -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')")
     echo "🐍 Found Python $PYTHON_VERSION"
     
-    # Compare version (basic check)
-    if [[ $(echo "$PYTHON_VERSION < 3.8" | bc -l) -eq 1 ]]; then
+    # Check if Python version is 3.8 or higher using Python itself
+    VERSION_CHECK=$($PYTHON_CMD -c "import sys; print('OK' if (sys.version_info.major == 3 and sys.version_info.minor >= 8) or sys.version_info.major > 3 else 'BAD')")
+    if [[ "$VERSION_CHECK" != "OK" ]]; then
         echo "❌ Python 3.8+ required. Found Python $PYTHON_VERSION"
         exit 1
     fi

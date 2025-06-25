@@ -12,6 +12,7 @@ from .scanner import ModuleScanner
 from .linker import DependencyLinker
 from .exporter import export_json, export_csv, export_dot, export_function_map_json, export_function_dot
 from .config import Walk3rConfig
+from .db_compliance import DatabaseComplianceAnalyzer
 
 # Import new analysis modules (with graceful fallback)
 try:
@@ -231,10 +232,34 @@ def run_long_walk_analysis(args):
             print(f"   📖 Documentation: {func_coverage}% function coverage - {quality.lower()}")
         except Exception as e:
             print(f"   ⚠️  Warning: Documentation analysis failed: {e}")
+
+    #Step 6: Database Architecture Compliance        
+    if config.enable_db_compliance:
+        print("\n🏗️  Step 6: Analyzing database architecture compliance...")
+        try:
+            compliance_analyzer = DatabaseComplianceAnalyzer(root_path, raw_data, config)
+            compliance_data = compliance_analyzer.analyze_compliance()
+            all_analysis_data['db_compliance'] = compliance_data
+            
+            compliance_path = output_dir / f"db-compliance-{date_tag}.json"
+            with open(compliance_path, 'w', encoding='utf-8') as f:
+                json.dump({"database_compliance": compliance_data}, f, indent=2)
+            print(f"   ✅ Database compliance analysis exported: {compliance_path.name}")
+            
+            # Print brief summary
+            summary = compliance_data.get('compliance_summary', {})
+            overall_score = compliance_data.get('overall_architectural_score', 0)
+            violations = summary.get('total_violations', 0)
+            if violations > 0:
+                print(f"   🚨 Architecture: {overall_score:.1f}% compliance, {violations} violations need attention")
+            else:
+                print(f"   ✅ Architecture: {overall_score:.1f}% compliance - excellent service layer usage!")
+        except Exception as e:
+            print(f"   ⚠️  Warning: Database compliance analysis failed: {e}")
     
-    # Step 6: Generate Summaries
+    # Step 7: Generate Summaries
     if config.enable_summary:
-        print("\n📋 Step 6: Generating project summaries...")
+        print("\n📋 Step 7: Generating project summaries...")
         try:
             summarizer = ProjectSummarizer(all_analysis_data)
             
@@ -258,7 +283,8 @@ def run_long_walk_analysis(args):
     # Final summary
     print(f"\n🎉 Long walk analysis complete!")
     print(f"📁 All files saved to: {output_dir}")
-    print(f"💡 Pro tip: Upload the summary-{date_tag}.json to ChatGPT/Claude to ask questions about your codebase!")
+    print(f"💡 Pro tip: Check db-compliance-{date_tag}.json for architecture violations!")
+    print(f"💡 Upload summary-{date_tag}.json to ChatGPT/Claude to ask about your codebase!")
     
     return 0
 

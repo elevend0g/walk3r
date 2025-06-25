@@ -1,16 +1,27 @@
 [project]
 name = "walk3r"
-version = "0.1.1"
-description = "Modular Python dependency mapping tool"
+version = "2.0.0"
+description = "Easy-to-use static analysis tool for non-programmers and AI assistant integration"
 authors = [{ name = "Jay", email = "none@example.com" }]
 readme = "README.md"
 requires-python = ">=3.8"
 dependencies = [
     "toml",
-    "graphviz",        # if you're generating .dot/.svg
-    "networkx",        # if you're doing graph work
-    "rich",            # if you pretty-print to terminal
+    "rich>=12.0.0",    # Enhanced terminal output and user interaction
+    "graphviz",        # Graph visualization
+    "networkx",        # Graph analysis
     "pathlib; python_version<'3.4'",  # pathlib is built-in from 3.4+
+]
+
+[project.scripts]
+walk3r = "app.cli_v2:main"
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "pytest-cov",
+    "black",
+    "flake8",
 ]
 
 [tool.setuptools]

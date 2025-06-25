@@ -20,7 +20,6 @@ def render_dot_to_images(dot_path: Path):
     print(f"🖼️  Rendered SVG: {svg_path}")
     print(f"🖼️  Rendered PNG: {png_path}")
 
-
 def main():
     print(f"🔍 Starting from directory: {os.getcwd()}")
     
@@ -53,8 +52,16 @@ def main():
     print(f"🔍 Scanner found {len(raw_data)} modules:")
     for module in sorted(raw_data.keys())[:10]:
         print(f"   📁 {module}")
-    
-    # Rest of function continues...
+
+    # Prepare dependency mapping
+    linker = DependencyLinker(raw_data)
+    dependency_map = linker.resolve_links()
+    function_map = linker.get_function_map()
+
+    # --- ADD THIS BLOCK TO FIX THE ERROR ---
+    date_tag = datetime.now().strftime("%Y%m%d")
+    # ---------------------------------------
+
     # Export function-level JSON
     fn_json_path = Path(f"functions-{date_tag}.json")
     export_function_map_json(function_map, fn_json_path)
@@ -65,6 +72,17 @@ def main():
     export_function_dot(function_map, fn_dot_path)
     render_dot_to_images(fn_dot_path)
     print(f"🧠 Wrote function-level graph to {fn_dot_path}")
+
+    # Optionally: export dependency graph as well (add more as needed)
+    for fmt in formats:
+        dep_path = Path(f"deps-{date_tag}.{fmt}")
+        if fmt == "json":
+            export_json(dependency_map, dep_path)
+        elif fmt == "csv":
+            export_csv(dependency_map, dep_path)
+        elif fmt == "dot":
+            export_dot(dependency_map, dep_path)
+        print(f"📎 Wrote dependency map ({fmt}) to {dep_path}")
 
 if __name__ == "__main__":
     main()

@@ -108,9 +108,33 @@ EOF
     fi
 }
 
+# Clone Walk3r repository
+clone_repository() {
+    echo "📥 Cloning Walk3r repository..."
+    
+    if command -v git &> /dev/null; then
+        if [[ -d "walk3r" ]]; then
+            echo "   📁 walk3r directory exists, updating..."
+            cd walk3r
+            git pull origin main
+        else
+            git clone https://github.com/elevend0g/walk3r.git
+            cd walk3r
+        fi
+        echo "✅ Repository ready"
+    else
+        echo "❌ git not found. Please install git first:"
+        echo "   Ubuntu/Debian: sudo apt-get install git"
+        echo "   macOS: xcode-select --install"
+        echo "   Or download from: https://git-scm.com/"
+        exit 1
+    fi
+}
+
 # Main installation process
 main() {
     check_python
+    clone_repository
     
     echo
     read -p "🔧 Install system dependencies (requires sudo)? (Y/n): " -n 1 -r
@@ -129,6 +153,7 @@ main() {
     echo "🎉 Walk3r 2.0 installation complete!"
     echo
     echo "📋 Quick start:"
+    echo "   cd walk3r"
     echo "   $PYTHON_CMD -m app.cli_v2 scan     # Interactive analysis"
     echo "   $PYTHON_CMD -m app.cli_v2 quick    # Quick analysis"
     echo "   $PYTHON_CMD -m app.cli_v2 setup    # Configure only"

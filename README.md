@@ -106,6 +106,12 @@ Walk3r 2.0 is optimized for AI coding assistants:
 
 Walk3r auto-generates configuration, but you can customize `walk3r.toml`:
 
+```bash
+# Copy the example configuration
+cp walk3r.toml.example walk3r.toml
+# Then edit walk3r.toml for your needs
+```
+
 ```toml
 [walk3r]
 root_path = "."                    # Your project path

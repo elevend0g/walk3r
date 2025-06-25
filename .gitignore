@@ -8,9 +8,13 @@ __pycache__/
 reports/*
 !reports/.keep
 walk3r_out/
+walk3r_reports/
 *.log
 *.tmp
 *.bak
+
+# === User configuration files ===
+walk3r.toml
 
 # === Build and distribution artifacts ===
 build/

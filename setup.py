@@ -93,6 +93,17 @@ def suggest_graphviz_install():
 
 def create_example_config():
     """Create an example configuration file"""
+    try:
+        # Copy the example file if it exists
+        if os.path.exists("walk3r.toml.example"):
+            import shutil
+            shutil.copy2("walk3r.toml.example", "walk3r-config-example.toml")
+            print("✅ Created walk3r-config-example.toml configuration template")
+            return True
+    except Exception:
+        pass
+    
+    # Fallback: create basic config
     config_content = """# Walk3r 2.0 Configuration Example
 # Copy this to your project directory and customize
 

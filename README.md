@@ -212,7 +212,7 @@ MIT License - see [LICENSE](LICENSE) for details.
 
 ## 🆘 Support
 
-- 📚 **Documentation**: [GitHub Wiki](https://github.com/elevend0g/walk3r/wiki)
+- 📚 **Documentation**: This README and example files
 - 🐛 **Issues**: [GitHub Issues](https://github.com/elevend0g/walk3r/issues)
 - 💬 **Discussions**: [GitHub Discussions](https://github.com/elevend0g/walk3r/discussions)
 
